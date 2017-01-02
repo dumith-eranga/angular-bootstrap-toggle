@@ -60,6 +60,8 @@
               (index < 6 ? $interpolate($attrs[key])($scope.$parent) : $scope.$parent.$eval($attrs[key])) :
               toggleConfig[key];
           });
+		  
+		  self['disabled'] = angular.isDefined($attrs['ngDisabled']) ? $scope.$parent.$eval($attrs['ngDisabled']) : false;
 
           this.init = function (ngModelCtrl_) {
             ngModelCtrl = ngModelCtrl_;
@@ -123,6 +125,10 @@
             ngModelCtrl.$setViewValue(!ngModelCtrl.$viewValue);
             ngModelCtrl.$render();
           };
+		  
+		  $scope.isDisabled = function() {
+			return self.disabled;
+		  }
 
           // Watchable date attributes
           angular.forEach(['ngModel'], function (key) {
@@ -142,17 +148,26 @@
               }
             });
           });
+		  
+		  $scope.$watch(
+			function(){ return $scope.$parent.$eval($attrs['ngDisabled']); },
+			function (newValue, oldValue) {
+			  if (newValue !== oldValue) {
+				self['disabled'] = newValue;
+			  }
+		    }
+		  );
         }])
 
     .directive('toggle', function () {
         return {
           restrict: 'E',
           transclude: true,
-          template: '<div class="toggle btn" ng-class="wrapperClass" ng-style="wrapperStyle" ng-click="onSwitch()">' +
+          template: '<div class="toggle btn" ng-class="wrapperClass" ng-style="wrapperStyle" ng-click="onSwitch()" ng-disabled="isDisabled()">' +
           '<div class="toggle-group">' +
-          '<label class="btn" ng-class="onClass"></label>' +
-          '<label class="btn active" ng-class="offClass"></label>' +
-          '<span class="btn btn-default" ng-class="handleClass"></span>' +
+          '<label class="btn" ng-class="onClass" ng-disabled="isDisabled()"></label>' +
+          '<label class="btn active" ng-class="offClass" ng-disabled="isDisabled()"></label>' +
+          '<span class="btn btn-default" ng-class="handleClass" ng-disabled="isDisabled()"></span>' +
           '</div>' +
           '</div>',
           scope: {
