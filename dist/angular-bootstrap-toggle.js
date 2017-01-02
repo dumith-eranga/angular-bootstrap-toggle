@@ -122,8 +122,10 @@
           };
 
           $scope.onSwitch = function (evt) {
-            ngModelCtrl.$setViewValue(!ngModelCtrl.$viewValue);
-            ngModelCtrl.$render();
+			if (!self.disabled) {
+              ngModelCtrl.$setViewValue(!ngModelCtrl.$viewValue);
+              ngModelCtrl.$render();
+		    }
           };
 		  
 		  $scope.isDisabled = function() {
